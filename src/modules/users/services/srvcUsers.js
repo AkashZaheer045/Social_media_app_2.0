@@ -1,8 +1,8 @@
 
 const sequelize = require('../../../../db/sequelize/sequelize');
-const keys_length = require("./../../../../config/constants.json").keys_length;
+const constants = require("./../../../../config/constants.json");
+const keys_length = constants.keys_length;
 const base_encoder = require('eb-butler-utils');
-const configJSON = require('./../../../../config/config.json')
 const { Op } = require('sequelize')
 /* DB Instances */
 
@@ -55,6 +55,24 @@ const findUserById = async (id) => {
     const [user, err] = await userInstance.findOne({ where: { id } });
     if (err) throw err;
     return user;
+}
+
+// Find user by ID with role information included
+const findUserWithRoleById = async (id) => {
+    try {
+        const user = await sequelize.models.users.findOne({
+            where: { id },
+            attributes: { exclude: ['password', 'confirmPassword'] },
+            include: [{
+                model: sequelize.models.roles,
+                as: 'role',
+                attributes: ['id', 'name']
+            }]
+        });
+        return user;
+    } catch (error) {
+        throw error;
+    }
 }
 
 /**
@@ -150,10 +168,10 @@ const decodeCustomToken = (token) => {
     const index_separator = keys_length.index_separator;
     const parts = token.split(index_separator);
     if (parts.length !== 4) throw new Error("Invalid token format");
-    const userId = base_encoder.decode(parts[0], configJSON.data_set);
-    const tempTokenId = base_encoder.decode(parts[1], configJSON.data_set);
+    const userId = base_encoder.decode(parts[0], constants.data_set);
+    const tempTokenId = base_encoder.decode(parts[1], constants.data_set);
     const rawToken = parts[2];
-    const expiry = parseInt(base_encoder.decode(parts[3], configJSON.data_set), 10);
+    const expiry = parseInt(base_encoder.decode(parts[3], constants.data_set), 10);
 
     return {
         userId,
@@ -187,10 +205,10 @@ const findOrCreateResetToken = async (userId) => {
 const encodeResetToken = function (userId, tokenId, rawToken, expiry) {
     const index_separator = keys_length.index_separator;
     return [
-        base_encoder.encode(userId, configJSON.data_set),
-        base_encoder.encode(tokenId, configJSON.data_set),
+        base_encoder.encode(userId, constants.data_set),
+        base_encoder.encode(tokenId, constants.data_set),
         rawToken,
-        base_encoder.encode(expiry, configJSON.data_set)
+        base_encoder.encode(expiry, constants.data_set)
     ].join(index_separator);
 }
 
@@ -216,11 +234,11 @@ const getUserTotalCount = async () => {
     // Single DB hit: count all users, including soft-deleted
     const totalCount = await sequelize.models.users.count({
         where: {
-        deleted_at: {
-            [Op.or]: [null,{[Op.ne]: null}]
+            deleted_at: {
+                [Op.or]: [null, { [Op.ne]: null }]
+            }
         }
-        }
-      });
+    });
     return totalCount;
 };
 
@@ -239,6 +257,7 @@ module.exports =
     encodeResetToken,
     findOrCreateResetToken,
     findUserById,
+    findUserWithRoleById,
     getAllUsers,
     getUserCount,
     getUserTotalCount

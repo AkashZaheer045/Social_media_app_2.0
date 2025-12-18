@@ -1,0 +1,48 @@
+{
+    "keys_length": {
+        "auto_id": 10,
+        "index_separator": ".",
+        "key": 30,
+        "default_hash": "sha256",
+        "access_token": 32,
+        "refresh_token": 64
+    },
+    "data_set": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+    "char_set": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+    "pagination": {
+        "default_page": 1,
+        "default_per_page": 20,
+        "max_per_page": 100
+    },
+    "file_upload": {
+        "max_file_size_mb": 10,
+        "allowed_image_types": [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp"
+        ],
+        "allowed_video_types": [
+            "video/mp4",
+            "video/webm",
+            "video/quicktime"
+        ],
+        "allowed_document_types": [
+            "application/pdf",
+            "application/msword"
+        ]
+    },
+    "auth": {
+        "access_token_expiry_ms": 86400000,
+        "refresh_token_expiry_ms": 259200000
+    },
+    "rate_limiting": {
+        "window_ms": 60000,
+        "max_requests": 100
+    },
+    "roles": {
+        "SUPERADMIN": 1,
+        "ADMIN": 2,
+        "USER": 3
+    }
+}

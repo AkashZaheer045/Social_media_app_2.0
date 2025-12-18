@@ -1,7 +1,7 @@
 const { generateRandomString } = require("eb-butler-utils");
-const keys_length = require("../../config/config.json").keys_length;
-const config = require("../../config/config.json");
-// let keys_length = require("./../config/keys_length");
+const constants = require("../../config/constants.json");
+const keys_length = constants.keys_length;
+
 module.exports = function (sequelize, DataTypes) {
     let Model = sequelize.define("authorizations", {
         id: {
@@ -66,17 +66,17 @@ module.exports = function (sequelize, DataTypes) {
     }, {
         instanceMethods: {
             generateAccessToken: function () {
-                return this.accessToken = generateRandomString(keys_length.access_token, config.char_set);
+                return this.accessToken = generateRandomString(keys_length.access_token, constants.char_set);
             }
         }
     });
     //--//
     Model.prototype.generateAccessToken = function () {
-        this.accessToken = generateRandomString(keys_length.access_token, config.char_set);
+        this.accessToken = generateRandomString(keys_length.access_token, constants.char_set);
     };
-    
+
     Model.prototype.generatePasswordToken = function () {
-        this.refreshToken = generateRandomString(keys_length.refresh_token, config.char_set);
+        this.refreshToken = generateRandomString(keys_length.refresh_token, constants.char_set);
     };
     return Model;
 };

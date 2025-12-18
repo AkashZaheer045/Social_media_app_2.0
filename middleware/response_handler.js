@@ -148,3 +148,31 @@ module.exports = async function (data, req, res, next) {
         });
     }
 };
+
+module.exports = function (err, req, res, next) {
+    // Ensure we have an Error-like object
+    const statusCode = err && (err.statusCode || err.status) ? (err.statusCode || err.status) : 500;
+    const message = err && err.message ? err.message : "Internal Server Error";
+
+    // Always log the full stack to terminal for debugging
+    if (err) {
+        console.error("Error stack:", err.stack || err);
+    }
+
+    // Build response payload
+    const payload = {
+        status: "error",
+        statusCode,
+        message,
+        data: (err && err.data) ? err.data : {},
+        error: (err && err.error) ? err.error : {}
+    };
+
+    // Include stack in response only in non-production environments (optional)
+    if (process.env.NODE_ENV !== "production" && err) {
+        payload.errorStack = err.stack || String(err);
+    }
+
+    // Send response
+    res.status(statusCode).json(payload);
+};

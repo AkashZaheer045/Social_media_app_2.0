@@ -1,9 +1,8 @@
 const base_encoder = require("eb-butler-utils");
-const configJSON = require("../../../../config/config.json");
+const constants = require("../../../../config/constants.json");
 const sequelize = require('../../../../db/sequelize/sequelize');
 const userService = require('../services/srvcUsers')
-const config = require("../../../../config/config.json");
-const keys_length = config.keys_length;
+const keys_length = constants.keys_length;
 const index_separator = keys_length.index_separator;
 const { ROLES } = require('../../../../constants/roles');
 
@@ -78,11 +77,11 @@ const login = async function (req, res, next) {
         //-Assigning the userid and device token to the refreshtoken here from db-//
         refresh_token = authorization.refreshToken;
 
-        encoded_user_id = base_encoder.encode(user.id, configJSON.data_set);
-        encoded_access_id = base_encoder.encode(authorization.id, configJSON.data_set);
+        encoded_user_id = base_encoder.encode(user.id, constants.data_set);
+        encoded_access_id = base_encoder.encode(authorization.id, constants.data_set);
         let now = Date.now();
-        let accessExpiry = base_encoder.encode(now + 1000 * 60 * 86400, configJSON.data_set);           // 1 day
-        let refreshExpiry = base_encoder.encode(now + 1000 * 86400 * 3, configJSON.data_set);     // 3 days
+        let accessExpiry = base_encoder.encode(now + 1000 * 60 * 86400, constants.data_set);           // 1 day
+        let refreshExpiry = base_encoder.encode(now + 1000 * 86400 * 3, constants.data_set);     // 3 days
 
         let access_authorization = encoded_user_id + index_separator + encoded_access_id + index_separator + access_token + index_separator + accessExpiry;
 
@@ -227,10 +226,10 @@ const refreshToken = async (req, res, next) => {
         const refreshParts = refresh_token.split(index_separator);
         if (refreshParts.length !== 4) return next(new TypeError("Invalid refresh token format"));
 
-        const userId = base_encoder.decode(refreshParts[0], config.data_set);
-        const authId = base_encoder.decode(refreshParts[1], config.data_set);
+        const userId = base_encoder.decode(refreshParts[0], constants.data_set);
+        const authId = base_encoder.decode(refreshParts[1], constants.data_set);
         const refreshToken = refreshParts[2];
-        const refreshExpiry = parseInt(base_encoder.decode(refreshParts[3], config.data_set), 10);
+        const refreshExpiry = parseInt(base_encoder.decode(refreshParts[3], constants.data_set), 10);
 
         if (Date.now() > refreshExpiry)
             return next(new TypeError("Refresh token expired. Please login again."));
@@ -247,9 +246,9 @@ const refreshToken = async (req, res, next) => {
         authRecord.generateAccessToken();
         await authRecord.save();
 
-        const encoded_user_id = base_encoder.encode(userId, config.data_set);
-        const encoded_auth_id = base_encoder.encode(authId, config.data_set);
-        const newAccessExpiry = base_encoder.encode(Date.now() + 1000 * 60 * 15, config.data_set); // 15 mins
+        const encoded_user_id = base_encoder.encode(userId, constants.data_set);
+        const encoded_auth_id = base_encoder.encode(authId, constants.data_set);
+        const newAccessExpiry = base_encoder.encode(Date.now() + 1000 * 60 * 15, constants.data_set); // 15 mins
 
         const new_access_token = [
             encoded_user_id,

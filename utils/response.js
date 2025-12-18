@@ -1,5 +1,4 @@
-// const server_config = require("./../config/server");
-var config = require('../config/config.json')
+// Response utility class
 
 //--//
 module.exports = class {
@@ -39,23 +38,9 @@ module.exports = class {
             message: this.message,
             data: this.data,
             error: this.error,
-            errorStack:this.errorStack
-            // UID: req.UID
+            errorStack: this.errorStack
         };
-        // console.log(result);
         if (req.statusMessage && req.statusMessage !== "") { result.message = req.statusMessage; }
-        // if(!server_config.enc_enabled){req.enc_password = "";}
-        // if(req.enc_password && req.enc_password !== ""){
-        //     let password = req.enc_password;
-        //     if(result.data){
-        //         result.data = JSON.stringify(result.data);
-        //         result.data = crypto.encrypt(result.data, password);
-        //     }
-        //     else if(result.error){
-        //         result.error = JSON.stringify(result.error);
-        //         result.error = crypto.encrypt(result.error, password);
-        //     }
-        // }
         return res.status(this.statusCode).json(result);
     }
 };

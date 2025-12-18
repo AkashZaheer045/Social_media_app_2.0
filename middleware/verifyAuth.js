@@ -1,9 +1,9 @@
 const base_encoder = require("eb-butler-utils");
-const config = require("../config/config.json");
-const keys_length = config.keys_length;
+const constants = require("../config/constants.json");
+const keys_length = constants.keys_length;
 const index_separator = keys_length.index_separator;
- const sequelize = require("../db/sequelize/sequelize");
- const userService = require("../src/modules/users/services/srvcUsers");
+const sequelize = require("../db/sequelize/sequelize");
+const userService = require("../src/modules/users/services/srvcUsers");
 
 async function verifyAuth(req, res, next) {
     try {
@@ -13,9 +13,9 @@ async function verifyAuth(req, res, next) {
         const accessParts = access_token.split(index_separator);
         if (accessParts.length !== 4) return next(new TypeError("Invalid access token format"));
 
-        const userId = base_encoder.decode(accessParts[0], config.data_set);
-        const authId = base_encoder.decode(accessParts[1], config.data_set);
-        const accessExpiry = parseInt(base_encoder.decode(accessParts[3], config.data_set), 10);
+        const userId = base_encoder.decode(accessParts[0], constants.data_set);
+        const authId = base_encoder.decode(accessParts[1], constants.data_set);
+        const accessExpiry = parseInt(base_encoder.decode(accessParts[3], constants.data_set), 10);
 
         if (Date.now() > accessExpiry) {
             // Token expired

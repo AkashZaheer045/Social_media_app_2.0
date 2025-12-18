@@ -1,3 +1,35 @@
+# Dependencies
 /node_modules
+
+# Environment files (secrets)
 .env
-/config
+.env.local
+.env.*.local
+
+# Config files with secrets
+/config/config.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build outputs
+/dist
+/build
+
+# Uploads (keep folder but ignore contents)
+/uploads/*
+!/uploads/.gitkeep
+
+# Coverage
+/coverage

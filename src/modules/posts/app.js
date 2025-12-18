@@ -1,11 +1,11 @@
 const express = require("express");
-//--//
-let routes = function () {
+
+/**
+ * Posts module router factory
+ * @returns {express.Router} Configured Express router
+ */
+module.exports = function () {
     const router = express.Router();
     router.use("/", require("./routes/rtPosts"));
-
-
     return router;
 };
-//--//
-module.exports = routes;

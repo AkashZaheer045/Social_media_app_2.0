@@ -1,9 +1,16 @@
-const stripe = require('stripe')(process.env.Stripe_SECRET_KEY);
+// Initialize Stripe with optional secret key (graceful if missing)
+const stripeKey = process.env.STRIPE_SECRET_KEY || process.env.Stripe_SECRET_KEY;
+const stripe = stripeKey ? require('stripe')(stripeKey) : null;
 
 const createSubscriptionIntent = async (req, res) => {
   try {
+    // Check if Stripe is configured
+    if (!stripe) {
+      return res.status(503).json({ error: 'Stripe is not configured. Please set STRIPE_SECRET_KEY environment variable.' });
+    }
+
     // You should get the customer ID from your DB or create a new one if needed
-    const { userId,amount, currency } = req.body;
+    const { userId, amount, currency } = req.body;
 
     // Create a PaymentIntent for the subscription
     const paymentIntent = await stripe.paymentIntents.create({
