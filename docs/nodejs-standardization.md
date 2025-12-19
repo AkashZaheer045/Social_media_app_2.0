@@ -53,24 +53,31 @@ This document defines the standards each project that relies on our Node.js plat
 ## 3. Coding Conventions
 
 ### Modules
+
 Stick to CommonJS (`module.exports` / `require`) until a repo-wide migration plan exists. Avoid mixing ESM imports in the same file.
 
 ### Async Patterns
+
 Use `async/await` everywhere; never rely on unhandled promise rejections. Wrap async route handlers with centralized error middleware.
 
 ### Error Handling
+
 Bubble domain errors with custom types or codes defined in `utils/custom_exceptions.json`, then map to HTTP responses using `middleware/response_handler.js`.
 
 ### Validation
+
 Keep schema logic inside `src/modules/<domain>/validations/`. Use `express-validator` or Zod; never validate inside controllers directly.
 
 ### Logging
+
 Use `console-stamp` (already included) or a consistent logger wrapper. Every request should log trace ID, actor, and outcome at minimum.
 
 ### Naming
+
 Files are lowercase with underscores (legacy). New files should converge on kebab-case or camelCase; pick one per directory and stay consistent.
 
 ### Comments
+
 Use block comments only for non-obvious logic. Prefer self-documenting code and helper extraction.
 
 ## 4. Configuration & Environment Management
@@ -89,24 +96,31 @@ Use block comments only for non-obvious logic. Prefer self-documenting code and 
 ## 6. HTTP & API Standards
 
 ### Routing
+
 Define routes in `src/modules/<domain>/routes`. Keep routes declarative—no business logic in route files.
 
 ### Controllers
+
 Only coordinate request flow: parse inputs, call services, map responses. No DB access here.
 
 ### Services
+
 Own business logic and orchestration. They may call db/ repositories, external APIs (via axios), or helpers.
 
 ### Responses
+
 Use centralized helpers from `utils/response.js` to ensure shape consistency:
+
 ```json
 { "success": true, "data": {}, "errors": [], "meta": {} }
 ```
 
 ### Pagination
+
 Reuse `helpers/pagination.js` utilities for list endpoints to standardize parameters (page, limit, sort).
 
 ### Versioning
+
 Expose version via URL prefix (`/api/v1`) or headers. Document breaking changes in `CHANGELOG.md`.
 
 ## 7. Data & Persistence

@@ -240,22 +240,17 @@ The application supports three roles:
 ### Using Role Middleware
 
 ```javascript
-const { checkRole, isAdmin, isSuperAdmin } = require("../middleware/checkRole");
-const authMiddleware = require("../middleware/auth");
+const { checkRole, isAdmin, isSuperAdmin } = require('../middleware/checkRole');
+const authMiddleware = require('../middleware/auth');
 
 // Only superadmin can access
-router.post("/admin-only", authMiddleware, isSuperAdmin, controller);
+router.post('/admin-only', authMiddleware, isSuperAdmin, controller);
 
 // Admin or superadmin can access
-router.post("/staff", authMiddleware, isAdmin, controller);
+router.post('/staff', authMiddleware, isAdmin, controller);
 
 // Custom role check
-router.post(
-  "/custom",
-  authMiddleware,
-  checkRole([ROLES.ADMIN, ROLES.USER]),
-  controller
-);
+router.post('/custom', authMiddleware, checkRole([ROLES.ADMIN, ROLES.USER]), controller);
 ```
 
 ---

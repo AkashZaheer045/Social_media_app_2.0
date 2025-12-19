@@ -10,7 +10,7 @@ const detectLanguage = (req) => {
   // 3. Authorization token payload (if user is logged in)
   // 4. Default to English
 
-  let language = 'en'; // Default language
+  const language = 'en'; // Default language
 
   try {
     // 1. Check URL parameter
@@ -44,7 +44,6 @@ const detectLanguage = (req) => {
         return userLang;
       }
     }
-
   } catch (error) {
     console.log('Language detection error:', error.message);
   }
@@ -79,5 +78,5 @@ module.exports = {
   detectLanguage,
   isValidLanguage,
   getSupportedLanguages,
-  getLanguageDirection
+  getLanguageDirection,
 };

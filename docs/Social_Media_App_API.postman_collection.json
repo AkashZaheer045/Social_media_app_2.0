@@ -1,1187 +1,935 @@
 {
-    "info": {
-        "_postman_id": "social-media-app-2.0",
-        "name": "Social Media App 2.0 API",
-        "description": "Complete API collection for Social Media Application Backend.\n\n## Authentication\n- **Public Routes**: No authentication required\n- **Protected Routes**: Require `Authorization` header with access token\n\n## Base URL\n- Local: `http://localhost:3000`\n- Production: Update `{{base_url}}` variable accordingly\n\n## Token Format\nAccess tokens are custom encoded tokens in format: `encoded_user_id::encoded_auth_id::token::expiry`\n\n## Roles\n- `1`: SUPERADMIN\n- `2`: ADMIN  \n- `3`: USER",
-        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  "info": {
+    "_postman_id": "social-media-app-2.0",
+    "name": "Social Media App 2.0 API",
+    "description": "Complete API collection for Social Media Application Backend.\n\n## Authentication\n- **Public Routes**: No authentication required\n- **Protected Routes**: Require `Authorization` header with access token\n\n## Base URL\n- Local: `http://localhost:3000`\n- Production: Update `{{base_url}}` variable accordingly\n\n## Token Format\nAccess tokens are custom encoded tokens in format: `encoded_user_id::encoded_auth_id::token::expiry`\n\n## Roles\n- `1`: SUPERADMIN\n- `2`: ADMIN  \n- `3`: USER",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
     },
-    "variable": [
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "reset_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🏥 Health Check",
+      "item": [
         {
-            "key": "base_url",
-            "value": "http://localhost:3000",
-            "type": "string"
+          "name": "Health Check (Root)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check if the server is running and healthy (root level endpoint)."
+          },
+          "response": []
         },
         {
-            "key": "access_token",
-            "value": "",
-            "type": "string"
-        },
-        {
-            "key": "refresh_token",
-            "value": "",
-            "type": "string"
-        },
-        {
-            "key": "reset_token",
-            "value": "",
-            "type": "string"
+          "name": "Health Check (API v1)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "health"]
+            },
+            "description": "Check if the API v1 is running and healthy."
+          },
+          "response": []
         }
-    ],
-    "item": [
+      ]
+    },
+    {
+      "name": "👤 Users - Public",
+      "description": "Public user routes - No authentication required",
+      "item": [
         {
-            "name": "🏥 Health Check",
-            "item": [
-                {
-                    "name": "Health Check (Root)",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/health",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "health"
-                            ]
-                        },
-                        "description": "Check if the server is running and healthy (root level endpoint)."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Health Check (API v1)",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/health",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "health"
-                            ]
-                        },
-                        "description": "Check if the API v1 is running and healthy."
-                    },
-                    "response": []
-                }
-            ]
+          "name": "Create User (Register)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    console.log('User created:', jsonData);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\",\n    \"confirmPassword\": \"password123\",\n    \"phone\": \"+1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "create"]
+            },
+            "description": "Register a new user account.\n\n**Required Fields:**\n- `name`: User's full name (max 50 chars)\n- `email`: Valid email address\n- `password`: Minimum 6 characters, max 15\n- `confirmPassword`: Must match password\n\n**Optional Fields:**\n- `phone`: Phone number"
+          },
+          "response": []
         },
         {
-            "name": "👤 Users - Public",
-            "description": "Public user routes - No authentication required",
-            "item": [
-                {
-                    "name": "Create User (Register)",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "if (pm.response.code === 201) {",
-                                    "    var jsonData = pm.response.json();",
-                                    "    console.log('User created:', jsonData);",
-                                    "}"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\",\n    \"confirmPassword\": \"password123\",\n    \"phone\": \"+1234567890\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/user/create",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "user",
-                                "create"
-                            ]
-                        },
-                        "description": "Register a new user account.\n\n**Required Fields:**\n- `name`: User's full name (max 50 chars)\n- `email`: Valid email address\n- `password`: Minimum 6 characters, max 15\n- `confirmPassword`: Must match password\n\n**Optional Fields:**\n- `phone`: Phone number"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Login",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "var jsonData = pm.response.json();",
-                                    "if (jsonData.data && jsonData.data.accessToken) {",
-                                    "    pm.collectionVariables.set('access_token', jsonData.data.accessToken);",
-                                    "    pm.collectionVariables.set('refresh_token', jsonData.data.refreshToken);",
-                                    "    console.log('Tokens saved to collection variables');",
-                                    "}"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/user/login",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "user",
-                                "login"
-                            ]
-                        },
-                        "description": "Login with email and password.\n\n**Returns:**\n- `accessToken`: Use in Authorization header for protected routes\n- `refreshToken`: Use to get new access token when expired\n- `user`: User object with profile info"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Forgot Password",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "var jsonData = pm.response.json();",
-                                    "if (jsonData.data && jsonData.data.token) {",
-                                    "    pm.collectionVariables.set('reset_token', jsonData.data.token);",
-                                    "    console.log('Reset token saved');",
-                                    "}"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"email\": \"john.doe@example.com\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/user/forgotPassword",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "user",
-                                "forgotPassword"
-                            ]
-                        },
-                        "description": "Request a password reset token. The token will be returned in response (in production, send via email)."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Update Password (Reset)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "x-reset-token",
-                                "value": "{{reset_token}}",
-                                "description": "Password reset token from forgot password"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"newPassword123\",\n    \"confirm_password\": \"newPassword123\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/user/updatePassword",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "user",
-                                "updatePassword"
-                            ]
-                        },
-                        "description": "Reset user password using the reset token.\n\n**Headers:**\n- `x-reset-token`: Token received from forgot password endpoint"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Refresh Token",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "var jsonData = pm.response.json();",
-                                    "if (jsonData.data && jsonData.data.accessToken) {",
-                                    "    pm.collectionVariables.set('access_token', jsonData.data.accessToken);",
-                                    "    console.log('New access token saved');",
-                                    "}"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "x-refresh-token",
-                                "value": "{{refresh_token}}",
-                                "description": "Refresh token from login"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/user/Refresh-Token",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "user",
-                                "Refresh-Token"
-                            ]
-                        },
-                        "description": "Get a new access token using refresh token.\n\n**Headers:**\n- `x-refresh-token`: Refresh token received during login"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get All Users",
-                    "request": {
-                        "method": "POST",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/user/getAllUsers",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "user",
-                                "getAllUsers"
-                            ]
-                        },
-                        "description": "Get a list of all users (public endpoint)."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get User Total Count",
-                    "request": {
-                        "method": "POST",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/user/getUserTotalCount",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "user",
-                                "getUserTotalCount"
-                            ]
-                        },
-                        "description": "Get total count of users in the system."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Create Subscription Intent (Stripe)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"userId\": \"cus_xxx\",\n    \"amount\": 999,\n    \"currency\": \"usd\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/user/subscribe",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "user",
-                                "subscribe"
-                            ]
-                        },
-                        "description": "Create a Stripe payment intent for subscription.\n\n**Required Fields:**\n- `userId`: Stripe customer ID\n- `amount`: Amount in cents (e.g., 999 = $9.99)\n- `currency`: Currency code (e.g., 'usd')\n\n**Note:** Requires STRIPE_SECRET_KEY environment variable to be configured."
-                    },
-                    "response": []
-                }
-            ]
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.accessToken) {",
+                  "    pm.collectionVariables.set('access_token', jsonData.data.accessToken);",
+                  "    pm.collectionVariables.set('refresh_token', jsonData.data.refreshToken);",
+                  "    console.log('Tokens saved to collection variables');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "login"]
+            },
+            "description": "Login with email and password.\n\n**Returns:**\n- `accessToken`: Use in Authorization header for protected routes\n- `refreshToken`: Use to get new access token when expired\n- `user`: User object with profile info"
+          },
+          "response": []
         },
         {
-            "name": "👤 Users - Protected",
-            "description": "Protected user routes - Requires Authorization header",
-            "item": [
-                {
-                    "name": "Get Current User",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/user/get-user",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "user",
-                                "get-user"
-                            ]
-                        },
-                        "description": "Get the currently authenticated user's profile."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Update User Profile",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"name\": \"John Updated\",\n    \"phone\": \"+1987654321\",\n    \"profileImage\": \"https://example.com/avatar.jpg\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/user/update",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "user",
-                                "update"
-                            ]
-                        },
-                        "description": "Update the current user's profile information.\n\n**Updatable Fields:**\n- `name`: User's name\n- `phone`: Phone number\n- `profileImage`: Profile picture URL"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Update Email",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"newEmail\": \"newemail@example.com\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/user/updateEmail",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "user",
-                                "updateEmail"
-                            ]
-                        },
-                        "description": "Update the current user's email address."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Soft Delete User",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/user/soft-delete",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "user",
-                                "soft-delete"
-                            ]
-                        },
-                        "description": "Soft delete the current user's account. Sets `deleted_at` timestamp instead of permanently removing."
-                    },
-                    "response": []
-                }
-            ]
+          "name": "Forgot Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set('reset_token', jsonData.data.token);",
+                  "    console.log('Reset token saved');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"john.doe@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/forgotPassword",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "forgotPassword"]
+            },
+            "description": "Request a password reset token. The token will be returned in response (in production, send via email)."
+          },
+          "response": []
         },
         {
-            "name": "📝 Posts",
-            "description": "Post management endpoints - All routes require authentication",
-            "item": [
-                {
-                    "name": "Create Post",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"content\": \"This is my first post! 🎉\",\n    \"mediaUrl\": \"https://example.com/image.jpg\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/posts/create",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "posts",
-                                "create"
-                            ]
-                        },
-                        "description": "Create a new post.\n\n**Required Fields:**\n- `content`: Text content of the post\n\n**Optional Fields:**\n- `mediaUrl`: URL to attached media"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get All Posts (Feed)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"page\": 1,\n    \"limit\": 10\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/posts/list",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "posts",
-                                "list"
-                            ]
-                        },
-                        "description": "Get a paginated list of all posts (feed).\n\n**Optional Pagination:**\n- `page`: Page number (default: 1)\n- `limit`: Items per page (default: 10)"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Post by ID",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"postId\": 1\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/posts/get",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "posts",
-                                "get"
-                            ]
-                        },
-                        "description": "Get a single post by its ID."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Update Post",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"postId\": 1,\n    \"text\": \"Updated post content!\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/posts/update",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "posts",
-                                "update"
-                            ]
-                        },
-                        "description": "Update an existing post (only if owner).\n\n**Required:**\n- `postId`: ID of the post to update\n\n**Optional:**\n- `text`: New text content"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Soft Delete Post",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"postId\": 1\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/posts/soft-delete",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "posts",
-                                "soft-delete"
-                            ]
-                        },
-                        "description": "Soft delete a post (only if owner)."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get User's Posts",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/posts/user-posts",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "posts",
-                                "user-posts"
-                            ]
-                        },
-                        "description": "Get all posts by the currently authenticated user."
-                    },
-                    "response": []
-                }
-            ]
+          "name": "Update Password (Reset)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-reset-token",
+                "value": "{{reset_token}}",
+                "description": "Password reset token from forgot password"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"newPassword123\",\n    \"confirm_password\": \"newPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/updatePassword",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "updatePassword"]
+            },
+            "description": "Reset user password using the reset token.\n\n**Headers:**\n- `x-reset-token`: Token received from forgot password endpoint"
+          },
+          "response": []
         },
         {
-            "name": "💬 Comments",
-            "description": "Comment management endpoints - All routes require authentication",
-            "item": [
-                {
-                    "name": "Add Comment",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"postId\": 1,\n    \"text\": \"Great post! 👍\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/comments/add",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "comments",
-                                "add"
-                            ]
-                        },
-                        "description": "Add a comment to a post.\n\n**Required:**\n- `postId`: ID of the post to comment on\n- `text`: Comment text\n\n**Optional:**\n- `parentId`: ID of parent comment (for replies)"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Add Reply to Comment",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"postId\": 1,\n    \"text\": \"Thanks for your comment!\",\n    \"parentId\": 1\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/comments/add",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "comments",
-                                "add"
-                            ]
-                        },
-                        "description": "Reply to an existing comment.\n\n**Required:**\n- `postId`: ID of the post\n- `text`: Reply text\n- `parentId`: ID of the parent comment being replied to"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Comments by Post",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"postId\": 1\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/comments/getby-post",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "comments",
-                                "getby-post"
-                            ]
-                        },
-                        "description": "Get all comments for a specific post, including nested replies."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Edit Comment",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"commentId\": 1,\n    \"text\": \"Updated comment text\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/comments/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "comments",
-                                "edit"
-                            ]
-                        },
-                        "description": "Edit an existing comment (only if owner)."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Delete Comment",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"commentId\": 1\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/comments/delete",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "comments",
-                                "delete"
-                            ]
-                        },
-                        "description": "Delete a comment (owner or admin only)."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Toggle Like on Comment",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"commentId\": 1\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/comments/like",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "comments",
-                                "like"
-                            ]
-                        },
-                        "description": "Toggle like/unlike on a comment."
-                    },
-                    "response": []
-                }
-            ]
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.accessToken) {",
+                  "    pm.collectionVariables.set('access_token', jsonData.data.accessToken);",
+                  "    console.log('New access token saved');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-refresh-token",
+                "value": "{{refresh_token}}",
+                "description": "Refresh token from login"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/Refresh-Token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "Refresh-Token"]
+            },
+            "description": "Get a new access token using refresh token.\n\n**Headers:**\n- `x-refresh-token`: Refresh token received during login"
+          },
+          "response": []
         },
         {
-            "name": "❤️ Likes",
-            "description": "Like management endpoints - All routes require authentication",
-            "item": [
-                {
-                    "name": "Toggle Like on Post",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"targetId\": 1,\n    \"targetType\": \"post\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/likes/toggle",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "likes",
-                                "toggle"
-                            ]
-                        },
-                        "description": "Toggle like/unlike on a post or comment.\n\n**Required:**\n- `targetId`: ID of the post or comment\n- `targetType`: Either 'post' or 'comment'"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Toggle Like on Comment",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"commentId\": 1\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/likes/toggleComment",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "likes",
-                                "toggleComment"
-                            ]
-                        },
-                        "description": "Toggle like/unlike on a specific comment."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Likes by Post ID",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/likes/post/1",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "likes",
-                                "post",
-                                "1"
-                            ]
-                        },
-                        "description": "Get all likes for a specific post."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Likes by Comment ID",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/likes/comment/1",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "likes",
-                                "comment",
-                                "1"
-                            ]
-                        },
-                        "description": "Get all likes for a specific comment."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Likes by User ID",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/likes/user/1",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "likes",
-                                "user",
-                                "1"
-                            ]
-                        },
-                        "description": "Get all likes made by a specific user."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Check if User Liked Post",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/likes/user/1/post/1",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "likes",
-                                "user",
-                                "1",
-                                "post",
-                                "1"
-                            ]
-                        },
-                        "description": "Check if a specific user has liked a specific post."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Check if User Liked Comment",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/likes/user/1/comment/1",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "likes",
-                                "user",
-                                "1",
-                                "comment",
-                                "1"
-                            ]
-                        },
-                        "description": "Check if a specific user has liked a specific comment."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Count Likes on Post",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/likes/post/1/count",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "likes",
-                                "post",
-                                "1",
-                                "count"
-                            ]
-                        },
-                        "description": "Get total like count for a specific post."
-                    },
-                    "response": []
-                }
-            ]
+          "name": "Get All Users",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/getAllUsers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "getAllUsers"]
+            },
+            "description": "Get a list of all users (public endpoint)."
+          },
+          "response": []
         },
         {
-            "name": "📁 Files",
-            "description": "File upload endpoints - All routes require authentication",
-            "item": [
-                {
-                    "name": "Upload File(s)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "{{access_token}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "formdata",
-                            "formdata": [
-                                {
-                                    "key": "file",
-                                    "type": "file",
-                                    "src": "",
-                                    "description": "Select up to 2 files to upload"
-                                }
-                            ]
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/files/upload",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "files",
-                                "upload"
-                            ]
-                        },
-                        "description": "Upload one or more files (max 2 files per request).\n\n**Form Data:**\n- `file`: File(s) to upload\n\n**Returns:**\n- Array of uploaded file objects with metadata"
-                    },
-                    "response": []
-                }
-            ]
+          "name": "Get User Total Count",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/getUserTotalCount",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "getUserTotalCount"]
+            },
+            "description": "Get total count of users in the system."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Subscription Intent (Stripe)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": \"cus_xxx\",\n    \"amount\": 999,\n    \"currency\": \"usd\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/subscribe",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "subscribe"]
+            },
+            "description": "Create a Stripe payment intent for subscription.\n\n**Required Fields:**\n- `userId`: Stripe customer ID\n- `amount`: Amount in cents (e.g., 999 = $9.99)\n- `currency`: Currency code (e.g., 'usd')\n\n**Note:** Requires STRIPE_SECRET_KEY environment variable to be configured."
+          },
+          "response": []
         }
-    ]
+      ]
+    },
+    {
+      "name": "👤 Users - Protected",
+      "description": "Protected user routes - Requires Authorization header",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/get-user",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "get-user"]
+            },
+            "description": "Get the currently authenticated user's profile."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"John Updated\",\n    \"phone\": \"+1987654321\",\n    \"profileImage\": \"https://example.com/avatar.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/update",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "update"]
+            },
+            "description": "Update the current user's profile information.\n\n**Updatable Fields:**\n- `name`: User's name\n- `phone`: Phone number\n- `profileImage`: Profile picture URL"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"newEmail\": \"newemail@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/updateEmail",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "updateEmail"]
+            },
+            "description": "Update the current user's email address."
+          },
+          "response": []
+        },
+        {
+          "name": "Soft Delete User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/user/soft-delete",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "user", "soft-delete"]
+            },
+            "description": "Soft delete the current user's account. Sets `deleted_at` timestamp instead of permanently removing."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📝 Posts",
+      "description": "Post management endpoints - All routes require authentication",
+      "item": [
+        {
+          "name": "Create Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"content\": \"This is my first post! 🎉\",\n    \"mediaUrl\": \"https://example.com/image.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/posts/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "posts", "create"]
+            },
+            "description": "Create a new post.\n\n**Required Fields:**\n- `content`: Text content of the post\n\n**Optional Fields:**\n- `mediaUrl`: URL to attached media"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Posts (Feed)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"page\": 1,\n    \"limit\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/posts/list",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "posts", "list"]
+            },
+            "description": "Get a paginated list of all posts (feed).\n\n**Optional Pagination:**\n- `page`: Page number (default: 1)\n- `limit`: Items per page (default: 10)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Post by ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"postId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/posts/get",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "posts", "get"]
+            },
+            "description": "Get a single post by its ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"postId\": 1,\n    \"text\": \"Updated post content!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/posts/update",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "posts", "update"]
+            },
+            "description": "Update an existing post (only if owner).\n\n**Required:**\n- `postId`: ID of the post to update\n\n**Optional:**\n- `text`: New text content"
+          },
+          "response": []
+        },
+        {
+          "name": "Soft Delete Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"postId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/posts/soft-delete",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "posts", "soft-delete"]
+            },
+            "description": "Soft delete a post (only if owner)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User's Posts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/posts/user-posts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "posts", "user-posts"]
+            },
+            "description": "Get all posts by the currently authenticated user."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "💬 Comments",
+      "description": "Comment management endpoints - All routes require authentication",
+      "item": [
+        {
+          "name": "Add Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"postId\": 1,\n    \"text\": \"Great post! 👍\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/comments/add",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "comments", "add"]
+            },
+            "description": "Add a comment to a post.\n\n**Required:**\n- `postId`: ID of the post to comment on\n- `text`: Comment text\n\n**Optional:**\n- `parentId`: ID of parent comment (for replies)"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Reply to Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"postId\": 1,\n    \"text\": \"Thanks for your comment!\",\n    \"parentId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/comments/add",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "comments", "add"]
+            },
+            "description": "Reply to an existing comment.\n\n**Required:**\n- `postId`: ID of the post\n- `text`: Reply text\n- `parentId`: ID of the parent comment being replied to"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comments by Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"postId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/comments/getby-post",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "comments", "getby-post"]
+            },
+            "description": "Get all comments for a specific post, including nested replies."
+          },
+          "response": []
+        },
+        {
+          "name": "Edit Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"commentId\": 1,\n    \"text\": \"Updated comment text\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/comments/edit",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "comments", "edit"]
+            },
+            "description": "Edit an existing comment (only if owner)."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"commentId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/comments/delete",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "comments", "delete"]
+            },
+            "description": "Delete a comment (owner or admin only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Like on Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"commentId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/comments/like",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "comments", "like"]
+            },
+            "description": "Toggle like/unlike on a comment."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "❤️ Likes",
+      "description": "Like management endpoints - All routes require authentication",
+      "item": [
+        {
+          "name": "Toggle Like on Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"targetId\": 1,\n    \"targetType\": \"post\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/likes/toggle",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "likes", "toggle"]
+            },
+            "description": "Toggle like/unlike on a post or comment.\n\n**Required:**\n- `targetId`: ID of the post or comment\n- `targetType`: Either 'post' or 'comment'"
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Like on Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"commentId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/likes/toggleComment",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "likes", "toggleComment"]
+            },
+            "description": "Toggle like/unlike on a specific comment."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Likes by Post ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/likes/post/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "likes", "post", "1"]
+            },
+            "description": "Get all likes for a specific post."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Likes by Comment ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/likes/comment/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "likes", "comment", "1"]
+            },
+            "description": "Get all likes for a specific comment."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Likes by User ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/likes/user/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "likes", "user", "1"]
+            },
+            "description": "Get all likes made by a specific user."
+          },
+          "response": []
+        },
+        {
+          "name": "Check if User Liked Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/likes/user/1/post/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "likes", "user", "1", "post", "1"]
+            },
+            "description": "Check if a specific user has liked a specific post."
+          },
+          "response": []
+        },
+        {
+          "name": "Check if User Liked Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/likes/user/1/comment/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "likes", "user", "1", "comment", "1"]
+            },
+            "description": "Check if a specific user has liked a specific comment."
+          },
+          "response": []
+        },
+        {
+          "name": "Count Likes on Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/likes/post/1/count",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "likes", "post", "1", "count"]
+            },
+            "description": "Get total like count for a specific post."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📁 Files",
+      "description": "File upload endpoints - All routes require authentication",
+      "item": [
+        {
+          "name": "Upload File(s)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Select up to 2 files to upload"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/files/upload",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "files", "upload"]
+            },
+            "description": "Upload one or more files (max 2 files per request).\n\n**Form Data:**\n- `file`: File(s) to upload\n\n**Returns:**\n- Array of uploaded file objects with metadata"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
 }

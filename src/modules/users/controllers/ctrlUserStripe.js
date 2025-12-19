@@ -6,7 +6,9 @@ const createSubscriptionIntent = async (req, res) => {
   try {
     // Check if Stripe is configured
     if (!stripe) {
-      return res.status(503).json({ error: 'Stripe is not configured. Please set STRIPE_SECRET_KEY environment variable.' });
+      return res.status(503).json({
+        error: 'Stripe is not configured. Please set STRIPE_SECRET_KEY environment variable.',
+      });
     }
 
     // You should get the customer ID from your DB or create a new one if needed

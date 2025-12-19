@@ -1,6 +1,6 @@
-const express = require("express");
-const publicRoutes = require("./routes/rtUsers").public;
-const protectedRoutes = require("./routes/rtUsers").protected;
+const express = require('express');
+const publicRoutes = require('./routes/rtUsers').public;
+const protectedRoutes = require('./routes/rtUsers').protected;
 
 /**
  * Users module router factory
@@ -10,16 +10,16 @@ const protectedRoutes = require("./routes/rtUsers").protected;
  * @returns {express.Router} Configured Express router
  */
 module.exports = function ({ publicOnly, protectedOnly } = {}) {
-    const router = express.Router();
+  const router = express.Router();
 
-    if (publicOnly) {
-        router.use("/", publicRoutes);
-    } else if (protectedOnly) {
-        router.use("/", protectedRoutes);
-    } else {
-        router.use("/", publicRoutes);
-        router.use("/", protectedRoutes);
-    }
+  if (publicOnly) {
+    router.use('/', publicRoutes);
+  } else if (protectedOnly) {
+    router.use('/', protectedRoutes);
+  } else {
+    router.use('/', publicRoutes);
+    router.use('/', protectedRoutes);
+  }
 
-    return router;
+  return router;
 };

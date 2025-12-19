@@ -1,9 +1,9 @@
-const express = require("express");
-const fileController = require("../controllers/ctrlFiles");
-const upload = require("../../../../middleware/multer");
+const express = require('express');
+const fileController = require('../controllers/ctrlFiles');
+const upload = require('../../../../middleware/multer');
 const router = express.Router();
 // 1. Upload a file
-router.post("/upload", upload.array("file", 2), fileController.upload);
+router.post('/upload', upload.array('file', 2), fileController.upload);
 
 // // 2. Update a file (only if owner)
 // router.post("/update", fileController.update);
@@ -19,6 +19,5 @@ router.post("/upload", upload.array("file", 2), fileController.upload);
 
 // // 6. Get all files by a user
 // router.post("/user-files", fileController.getUserFiles);
-
 
 module.exports = router;

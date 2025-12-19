@@ -1,36 +1,34 @@
-const path = require('path');
-const moment = require('moment');
 const fileService = require('../services/srvcFiles');
 
 // 1.Upload a file
 const upload = async function (req, res, next) {
-    console.log("**********************************");
-    try {
-        // Assume file is available at req.file (set by multer or similar middleware)
-        // and user ID is available at req.user.userId
-        const userId = req.user.userId;
-        console.log("data of request ")
-        const files = req.files;
-        if (!files || files.length === 0) return next(new Error('No file uploaded'));
+  console.log('**********************************');
+  try {
+    // Assume file is available at req.file (set by multer or similar middleware)
+    // and user ID is available at req.user.userId
+    const userId = req.user.userId;
+    console.log('data of request ');
+    const files = req.files;
+    if (!files || files.length === 0) return next(new Error('No file uploaded'));
 
-        let results = [];
-        for (const file of files) {
-            let [data, err] = await fileService.create({
-                userId,
-                originalName: file.originalname,
-                fileName: file.filename,
-                mimeType: file.mimetype,
-                size: file.size,
-                uploadPath: file.path,
-                uploadedAt: moment().toISOString()
-            });
-            if (err) return next(err);
-            results.push(data);
-        }
-        return res.json({ success: true, files: results });
-    } catch (error) {
-        return next(error);
+    const results = [];
+    for (const file of files) {
+      const [data, err] = await fileService.create({
+        userId,
+        originalName: file.originalname,
+        fileName: file.filename,
+        mimeType: file.mimetype,
+        size: file.size,
+        uploadPath: file.path,
+        uploadedAt: new Date().toISOString(),
+      });
+      if (err) return next(err);
+      results.push(data);
     }
+    return res.json({ success: true, files: results });
+  } catch (error) {
+    return next(error);
+  }
 };
 
 // //2. List all files
@@ -95,10 +93,10 @@ const upload = async function (req, res, next) {
 // };
 
 module.exports = {
-    upload,
-    // getListItems,
-    // deleteRecord,
-    // get,
-    // update,
-    // getUserFiles,
+  upload,
+  // getListItems,
+  // deleteRecord,
+  // get,
+  // update,
+  // getUserFiles,
 };
