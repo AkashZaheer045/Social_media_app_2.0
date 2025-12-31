@@ -40,7 +40,17 @@ const parseSequelizeValidationError = (error, messages) => {
   return messages[key] || msgMap[key] || error?.message;
 };
 
-module.exports = async function (data, req, res, next) {
+/**
+ * Main response handler middleware
+ * This is a 4-argument middleware that handles both success data and errors
+ * passed via next(data) or next(err)
+ */
+const responseHandler = async function (data, req, res, next) {
+  // If response is already sent, skip
+  if (res.headersSent) {
+    return next();
+  }
+
   const response = new responseH();
   const lang = req.language || 'en';
   const messages = custom_exceptions[lang] || custom_exceptions.en;
@@ -48,10 +58,13 @@ module.exports = async function (data, req, res, next) {
   let console_error = true;
 
   try {
-    if (data && !isNaN(data)) {
+    // Handle numeric HTTP status codes (e.g., next(404), next(401))
+    if (data && !isNaN(data) && typeof data === 'number') {
       response.setError(data, Exception(data), data);
       console_error = false;
-    } else if (data instanceof sequelize.sequelize.ValidationError) {
+    }
+    // Handle Sequelize ValidationError
+    else if (data instanceof sequelize.sequelize.ValidationError) {
       const error = data.errors?.[0];
       const key = `${error.path}_${error.validatorKey}`; // like "email_isUnique"
       const fallback = `${uc_words(setField(error.path))} '${error.value}' is already taken`;
@@ -80,22 +93,32 @@ module.exports = async function (data, req, res, next) {
       }
 
       console_error = false;
-    } else if (data instanceof sequelize.sequelize.ValidationErrorItem) {
+    }
+    // Handle Sequelize ValidationErrorItem
+    else if (data instanceof sequelize.sequelize.ValidationErrorItem) {
       const error = data;
       response.setError(error, Exception(422), 422);
       response.message = parseSequelizeValidationError(error, messages);
       console_error = false;
-    } else if (
+    }
+    // Handle Sequelize database errors
+    else if (
       data instanceof sequelize.sequelize.SequelizeScopeError ||
       data instanceof sequelize.sequelize.DatabaseError ||
       data instanceof sequelize.sequelize.InstanceError
     ) {
       response.setError(data, Exception(400), 400);
-    } else if (data instanceof multer.MulterError) {
+    }
+    // Handle Multer errors
+    else if (data instanceof multer.MulterError) {
       response.setError(data, Exception(411), 411);
-    } else if (data instanceof sequelize.sequelize.BaseError) {
+    }
+    // Handle other Sequelize base errors
+    else if (data instanceof sequelize.sequelize.BaseError) {
       response.setError(data.message, Exception(500), 500);
-    } else if (data instanceof TypeError) {
+    }
+    // Handle TypeError
+    else if (data instanceof TypeError) {
       try {
         const parsed = JSON.parse(data.message);
         const { type, limit, field } = parsed;
@@ -115,54 +138,35 @@ module.exports = async function (data, req, res, next) {
           errorStack: data.stack,
         });
       }
-    } else if (data instanceof Error) {
+    }
+    // Handle generic Error objects
+    else if (data instanceof Error) {
       response.setError(data.message, Exception(500), 500);
-    } else {
+    }
+    // Handle success cases - plain objects with data (e.g., login response)
+    else {
       response.setSuccess(data, Exception(200), 200);
       console_error = false;
     }
 
-    if (response.status === 'error') {
-      response.setErrorStack(data.stack); // Retained as per your need
+    if (response.status === 'error' && data?.stack) {
+      response.setErrorStack(data.stack);
     }
 
     response.sendRes(req, res);
-    return next();
+    // Don't call next() after sending response - it can cause issues
+    return;
   } catch (err) {
-    console.log('Unexpected error:', err);
-    res.status(500).json({
-      status: 'error',
-      statusCode: 500,
-      message: 'Unexpected server error',
-      error: err.message,
-    });
+    console.log('Unexpected error in response handler:', err);
+    if (!res.headersSent) {
+      res.status(500).json({
+        status: 'error',
+        statusCode: 500,
+        message: 'Unexpected server error',
+        error: err.message,
+      });
+    }
   }
 };
 
-module.exports = function (err, req, res, next) {
-  // Ensure we have an Error-like object
-  const statusCode = err && (err.statusCode || err.status) ? err.statusCode || err.status : 500;
-  const message = err && err.message ? err.message : 'Internal Server Error';
-
-  // Always log the full stack to terminal for debugging
-  if (err) {
-    console.error('Error stack:', err.stack || err);
-  }
-
-  // Build response payload
-  const payload = {
-    status: 'error',
-    statusCode,
-    message,
-    data: err && err.data ? err.data : {},
-    error: err && err.error ? err.error : {},
-  };
-
-  // Include stack in response only in non-production environments (optional)
-  if (process.env.NODE_ENV !== 'production' && err) {
-    payload.errorStack = err.stack || String(err);
-  }
-
-  // Send response
-  res.status(statusCode).json(payload);
-};
+module.exports = responseHandler;

@@ -11,7 +11,8 @@ const common = require('./helpers/common');
 
 // Middleware imports
 const verifyAuth = require('./middleware/auth');
-const responseHandler = require('./middleware/response_handler');
+const responseHandler = require("./middleware/response_handler");
+const requestResponseLogger = require('./middleware/logging');
 
 // Database
 const sequelize = require('./db/sequelize/sequelize.js');
@@ -134,9 +135,12 @@ app.use(request_getters);
 app.use(request_parser);
 app.use(common.languageSet);
 
+// Add request/response logger so it wraps the whole request lifecycle
+app.use(requestResponseLogger);
+
 // Request URL logging
-app.use((req, _res, next) => {
-    console.log('======> req.originalUrl : ', req.originalUrl);
+app.use(function (req, res, next) {
+    console.log("======> req.originalUrl : ", req.originalUrl);
     next();
 });
 
@@ -146,6 +150,10 @@ app.use((req, _res, next) => {
 
 // Public routes (no authentication required)
 app.use('/api/v1/user', require('./src/modules/users/app.js')({ publicOnly: true }));
+
+// Public endpoints for viewing content (no auth required)
+app.post('/api/v1/public/comments/list', require('./src/modules/comments/controllers/ctrlComments').getByPost);
+app.post('/api/v1/public/posts/list', require('./src/modules/posts/controllers/ctrlPosts').getListItems);
 
 // Apply global authentication middleware
 app.use(verifyAuth);

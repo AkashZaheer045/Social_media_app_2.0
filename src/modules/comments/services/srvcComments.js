@@ -9,7 +9,7 @@ exports.create = async ({ postId, userId, text, parentId }) => {
     // Increment commentCount ONLY if it's a top-level comment
     if (!parentId) {
       const Post = sequelize.models.posts;
-      await Post.increment('comments_count', { where: { id: postId } });
+      await Post.increment('commentsCount', { where: { id: postId } });
     }
 
     return [comment, null];
@@ -21,17 +21,32 @@ exports.create = async ({ postId, userId, text, parentId }) => {
 exports.getByPost = async (postId) => {
   try {
     const instance = new sequelize.db(sequelize.models.comments);
-    const comments = await instance.findAll({
+    const [comments, error] = await instance.findAll({
       where: { postId, parentId: null },
-      order: [['created_at', 'DESC']],
+      order: [['createdAt', 'DESC']],
       include: [
+        {
+          model: sequelize.models.users,
+          as: 'user',
+          attributes: ['id', 'name', 'userName', 'profileImage'],
+          required: false,
+        },
         {
           model: sequelize.models.comments,
           as: 'replies',
           required: false,
+          include: [
+            {
+              model: sequelize.models.users,
+              as: 'user',
+              attributes: ['id', 'name', 'userName', 'profileImage'],
+              required: false,
+            },
+          ],
         },
       ],
     });
+    if (error) return [null, error];
     return [comments, null];
   } catch (error) {
     return [null, error];
@@ -69,7 +84,7 @@ exports.delete = async ({ commentId, userId }) => {
     await comment.destroy();
 
     if (!comment.parentId) {
-      await Post.decrement('comments_count', { where: { id: comment.postId } });
+      await Post.decrement('commentsCount', { where: { id: comment.postId } });
     }
 
     return [true, null];

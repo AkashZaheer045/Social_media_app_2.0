@@ -36,16 +36,11 @@ module.exports = function (db) {
     foreignKey: 'userrole_id',
     as: 'users',
   });
+  // User <-> Likes
+  db.users.hasMany(db.likes, { foreignKey: 'userId', as: 'likes' });
+  db.likes.belongsTo(db.users, { foreignKey: 'userId', as: 'user' });
 
-  // // One user can have many likes
-  // db.users.hasMany(db.likes, { foreignKey: "userId", as: "likes" });
-
-  // // Each like belongs to one user
-  // db.likes.belongsTo(db.users, { foreignKey: "userId", as: "user" });
-
-  // // One post can have many likes
-  // db.posts.hasMany(db.likes, { foreignKey: "postId", as: "likes" });
-
-  // // Each like belongs to one post
-  // db.likes.belongsTo(db.posts, { foreignKey: "postId", as: "post" });
+  // Post <-> Likes (using targetId for polymorphic relation)
+  // Note: Since likes uses targetId/targetType for polymorphic relations,
+  // we don't need a direct post association here
 };

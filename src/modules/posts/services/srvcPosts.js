@@ -27,7 +27,17 @@ const create = async (req) => {
 const getList = async (req) => {
   try {
     const { sort } = req.body;
-    const findQuery = { where: {}, order: [['createdAt', sort || 'DESC']] };
+    const findQuery = {
+      where: {},
+      order: [['createdAt', sort || 'DESC']],
+      include: [
+        {
+          model: sequelize.models.users,
+          as: 'user',
+          attributes: ['id', 'name', 'userName', 'profileImage'],
+        },
+      ],
+    };
 
     const pagination = new Pagination(req, findQuery);
 
@@ -35,9 +45,13 @@ const getList = async (req) => {
     const instance = sequelize.models.posts;
     const list = await instance.findAndCountAll(findQuery);
 
+    // Debug log to check if likesCount is returned
+    console.log('Posts data sample:', list.rows[0]?.toJSON?.() || list.rows[0]);
+
     pagination.setCount(list.count);
     return [{ list: list.rows, pagination }, null];
   } catch (error) {
+    console.error('Error fetching posts:', error);
     return [null, error];
   }
 };
